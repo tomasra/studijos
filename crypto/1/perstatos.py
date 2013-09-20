@@ -1,0 +1,35 @@
+#encoding:windows-1257
+import re
+
+# cipher = """
+# IAIPL KPUIS IK»¿T EDIIS IILKS 
+# M»KAE ÀUSUT –A€SM UIAS» D»LOS 
+# YSAPK AYAÀﬁ KIDAI SITNV AUAPI 
+# LR¿ 
+# """
+
+cipher="""
+ODMNG RPURO UÀTRP K€IRA UOIVN 
+TIAON RﬁIMR BKTNE ASNRK UJSÀS 
+SRUAS ASYÀN –LA¿U SYKAP KRPSV 
+IOAAR IﬁVKS EAAKV SBKUR RAOEA 
+LOKKL GISUR NAATO SROE¿ KKTUP 
+IPTAU SAILM UTUUS ARNRI LÀ»AP 
+USRNU AÀENA ILLSJ GV¿PR UIGGS 
+MTRAO KPUKR JBOOG P¡KSU NIDSK 
+∆IITT SPTAU OOEAL ÀGRSU IEUOA 
+KKUSA AIÀUN NOUOR ∆SIIK SL€OR 
+IK»OM NN∆Aÿ ÀEPUY IDTIG UO–DN 
+DAIAS AÀ
+"""
+
+cipher = re.sub('[\n ]', '', cipher)
+# order = [3, 1, 5, 2, 0, 4]
+order = [5, 0, 2, 1, 4, 3]
+l = len(cipher) // len(order)    # eilutes ilgis
+
+rez = ''
+for i in range(0, l):
+    for c in [cipher[i::l][j] for j in order]:
+        rez += c
+print(rez)

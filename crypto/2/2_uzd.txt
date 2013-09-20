@@ -1,0 +1,22 @@
+Tomas Raila
+
+ 9 užduotis 
+1. Feistelio iteraacijos funkcija tokia: (m^k)&((k//16)|m)
+
+Naudojamas raktas=era (69, 82, 65)
+
+Iššifruokite šifrą
+
+[[103, 96], [114, 101], [115, 37], [114, 97], [105, 110], [97, 118]]
+ATSAKYMAS:
+
+2. Feistelio iteraacijos funkcija ta pati 
+
+Naudojamas raktas=[245,217,??]
+
+Žinoma, kad e(ab|raktas)=[[106, 77]]
+
+Iššifruokite šifrą 
+
+[[106, 91], [118, 69], [107, 93], [46, 92], [102, 77], [109, 88], [104, 3]]
+ATSAKYMAS: grynas vanduo

@@ -1,8 +1,9 @@
 Tomas Raila
 
  29 užduotis 
+---------------------------------------------------------------------------
 1. Iššifruokite skytalės šifrą:
-
+---------------------------------------------------------------------------
 BIBIP AEAUA ASTUV USAJI ODINU 
 RKADT OLANA GAASG RAUBK UĖLKI 
 ASPOŠ ARVAŠ ČUTIL VIRLR ŠIAEE 
@@ -25,8 +26,9 @@ PASKUI MELSVAS ANT GALO ŠVIESIAI MĖLYNAS
 -------------------------------------
 
 
+---------------------------------------------------------------------------
 2. Iššifruokite perstatų šifrą:
-
+---------------------------------------------------------------------------
 IAIPL KPUIS IKČĄT EDIIS IILKS 
 MČKAE ĖUSUT ŠAŪSM UIASČ DČLOS 
 YSAPK AYAĖŽ KIDAI SITNV AUAPI 
@@ -41,8 +43,9 @@ RŪKAS MĄSČI
 ------------------------------------
 
 
+---------------------------------------------------------------------------
 3. Iššifruokite perstatų šifrą:
-
+---------------------------------------------------------------------------
 ODMNG RPURO UĖTRP KŪIRA UOIVN 
 TIAON RŽIMR BKTNE ASNRK UJSĖS 
 SRUAS ASYĖN ŠLAĄU SYKAP KRPSV 
@@ -69,36 +72,23 @@ BUVO TOKS KARŠTAS KAD NIEKO NELAUKDAMAS PASUKAU INT VAKARUS IR SKUBĖJAU SKUBĖ
 
 ------------------------------------
 
-
+---------------------------------------------------------------------------
 4. Iššifruokite geležinkelio tvorelės šifrą:
-
+---------------------------------------------------------------------------
 BČIAI IOPDU UŲNDE SIAAT ILNAS 
 JŠRAI OSSAJ IVIŲR ATAAT UŠOEK 
 MUOUI SLGRŠ KAČAK SASKŠ KRSLO 
 KAŪNI K
 
-BČIAIIOPD
-UUŲNDESIA
-ATILNASJŠ
-RAIOSSAJI
-VIŲRATAAT
-UŠOEKMUOU
-ISLGRŠKAČ
-AKSASKŠKR
-SLOKAŪNIK
+BET KAS ČIA ŠTAI AUKŠTAI ORE LINKSMAI SULOJO ŠUO
+IR PASKLIDO GARSUS ŠŪKAUJANČIŲ VAIKINŲ SKARDAS
 
-n=81
-
-B        Č         I          I
  
 
--------------------------------------------
 
--------------------------------------------
-
-
+---------------------------------------------------------------------------
 5. Iššifruokite 4x4 Fleisnerio šifrą
-
+---------------------------------------------------------------------------
 MĄII AUKT ISET AČAP 
 IKSN EPIA LAYČ IDVĖ 
 AUPD SUĖS AKUU ŽAČI 
@@ -106,8 +96,13 @@ LIII KOŠL SPKL ATSI
 IDSR ŪKŽA TYSŽ ASEČ
  Rakto dalis[0, 1, 9]
 
-6. Iššifruokite Dellastelio šifrą:
+MĄSČIAU TIK APIE TAI KAD NEPASIVĖLYČIAU 
+KAD SUSPĖČIAU UŽLIPTI KOL IŠSISKLAIDYS 
+RŪKAS ŽEČTSŽA
 
+---------------------------------------------------------------------------
+6. Iššifruokite Dellastelio šifrą:
+---------------------------------------------------------------------------
 LNSUCEENIMEAERFVTITU
 
 Abėcėlė:ABCČDEFGHIYJKLMNOPRSTUVZŽ raktas: siena
