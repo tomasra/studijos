@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "cells.h"
+#include "png_utils.h"
 
 // nuskaito pradine eilute
 char* read_input(char* filename)
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
 	// TODO - taisykle pasiimti is parametru?
 	char rule = 90;
 	char *input;
-	input = read_input("input2.txt");
+	input = read_input("tests/input2.txt");
 
 	if (input == -1)
 	{
@@ -58,13 +59,24 @@ int main(int argc, char *argv[])
 	// pradedam
 	int i;
 	char* output;
+	s_png_file* png = create_png_file("output.png", strlen(input), strlen(input));
+	if (png == -1)
+	{
+		printf("Nepavyko sukurti PNG failo\n");
+		return -1;
+	}
+
 	for (i = 0; i < strlen(input); i++)
 	{
-		printf("%s\n", input);
+		//printf("%s\n", input);
+		write_line(input, png);
+
 		char* output = malloc(strlen(input) * sizeof(char));
 		process_all(input, output, rule);
 		free(input);
 		input = output;
 	}
 	free(input);
+	finalize_png_file(png);
+	printf("Baigta\n");
 }
