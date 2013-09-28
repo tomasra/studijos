@@ -6,9 +6,10 @@
  */
 
 #include <string.h>
+#include <time.h>
 
 // triju lasteliu grupes simbolius pavercia i 3 bitu skaiciu
-char cells_to_bits(char cells[3])
+unsigned char cells_to_bits(char cells[3])
 {
 	char result = 0;
 	if (cells[0] == '1') result += 4;	// kaire lastele
@@ -18,11 +19,11 @@ char cells_to_bits(char cells[3])
 }
 
 // pritaiko taisykle triju lasteliu grupei ir grazina rezultata
-char process_cell(char cells[3], char rule)
+char process_cell(char cells[3], unsigned char rule)
 {
 	char bits = cells_to_bits(cells);
 	// istraukiam reikiama bita is taisykles
-	char result = (rule >> bits) % 2;
+	unsigned char result = (rule >> bits) % 2;
 	if (result == 0)
 		return '0';
 	else if (result == 1)
@@ -33,7 +34,7 @@ char process_cell(char cells[3], char rule)
 
 // input'as turi buti taisyklinga, bent jau triju simboliu ilgio null-terminated eilute
 // output'as turi buti jau isskirta atminties dalis, tokio paties ilgio kaip input'as
-void process_range(char *input, char *output, int start, int end, char rule)
+void process_range(char *input, char *output, int start, int end, unsigned char rule)
 {
 	int i;
 	for (i = start; i <= end; i++)
@@ -69,7 +70,7 @@ void process_range(char *input, char *output, int start, int end, char rule)
 }
 
 // tas pats kaip ir "process", tik visam buferiui
-void process_all(char* input, char* output, char rule)
+void process_all(char* input, char* output, unsigned char rule)
 {
 	process_range(input, output, 0, (strlen(input) - 1), rule);
 }
@@ -90,4 +91,20 @@ int input_valid(char *input)
 			return -1;
 
 	return 0;
+}
+
+// sugeneruoja atsitiktine nurodyto ilgio eilute
+char* get_random_input(int width)
+{
+	int i, c;
+	int datalength = sizeof(char) * width;
+	char* data = (char*)malloc(datalength);
+	srand(time(NULL));
+	for (i = 0; i < width; i++)
+	{
+		c = rand() % 2;
+		if (c == 0) data[i] = '0';
+		if (c == 1) data[i] = '1';
+	}
+	return data;
 }

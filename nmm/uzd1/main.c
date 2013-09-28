@@ -41,9 +41,10 @@ char* read_input(char* filename)
 int main(int argc, char *argv[])
 {
 	// TODO - taisykle pasiimti is parametru?
-	char rule = 90;
+	unsigned char rule = 110;
 	char *input;
-	input = read_input("tests/input2.txt");
+	//input = read_input("tests/input2.txt");
+	input = get_random_input(100);
 
 	if (input == -1)
 	{
@@ -59,16 +60,21 @@ int main(int argc, char *argv[])
 	// pradedam
 	int i;
 	char* output;
-	s_png_file* png = create_png_file("output.png", strlen(input), strlen(input));
+
+	// paveikslelio matmenys - gaminam kvadratini
+	int width = strlen(input);
+	int height = strlen(input);
+
+	s_png_file* png = create_png_file("output.png", width, height);
 	if (png == -1)
 	{
 		printf("Nepavyko sukurti PNG failo\n");
 		return -1;
 	}
 
-	for (i = 0; i < strlen(input); i++)
+	for (i = 0; i < height; i++)
 	{
-		//printf("%s\n", input);
+//		printf("%s\n", input);
 		write_line(input, png);
 
 		char* output = malloc(strlen(input) * sizeof(char));
