@@ -5,8 +5,78 @@
  *      Author: tomas
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+// sugeneruoja atsitiktine nurodyto ilgio eilute
+char* get_random_input(int width)
+{
+	int i, c;
+	int datalength = sizeof(char) * width;
+	char* data = (char*)malloc(datalength);
+	srand(time(NULL));
+	for (i = 0; i < width; i++)
+	{
+		c = rand() % 2;
+		if (c == 0) data[i] = '0';
+		if (c == 1) data[i] = '1';
+	}
+	return data;
+}
+
+// nuskaito pradine eilute is failo
+char* get_input_from_file(char* filename)
+{
+	FILE* file;
+	file = fopen(filename, "r");
+	if (file == NULL)
+		return -1;
+	else
+	{
+		// eilutes ilgis
+		int length;
+		fseek(file, 0L, SEEK_END);
+		length = ftell(file);
+		fseek(file, 0, SEEK_SET);
+
+		// skaitymas
+		char* data;
+		int datalength = (length + 1) * sizeof(char);
+		data = (char*)malloc(datalength);
+		memset(data, 0, datalength);
+
+		int i = 0;
+		char ch = fgetc(file);
+		while (ch != EOF)
+		{
+			data[i] = ch;
+			i++;
+			ch = fgetc(file);
+		}
+		fclose(file);
+		return data;
+	}
+}
+
+// ar taisyklingas input'as
+int input_valid(char *input)
+{
+	int i;
+	int length = strlen(input);
+
+	// per trumpas
+	if (length < 3)
+		return -1;
+
+	// yra blogu simboliu
+	for (i = 0; i < length; i++)
+		if (input[i] != '1' && input[i] != '0')
+			return -1;
+
+	return 0;
+}
 
 // triju lasteliu grupes simbolius pavercia i 3 bitu skaiciu
 unsigned char cells_to_bits(char cells[3])
@@ -73,38 +143,4 @@ void process_range(char *input, char *output, int start, int end, unsigned char 
 void process_all(char* input, char* output, unsigned char rule)
 {
 	process_range(input, output, 0, (strlen(input) - 1), rule);
-}
-
-// ar taisyklingas input'as
-int input_valid(char *input)
-{
-	int i;
-	int length = strlen(input);
-
-	// per trumpas
-	if (length < 3)
-		return -1;
-
-	// yra blogu simboliu
-	for (i = 0; i < length; i++)
-		if (input[i] != '1' && input[i] != '0')
-			return -1;
-
-	return 0;
-}
-
-// sugeneruoja atsitiktine nurodyto ilgio eilute
-char* get_random_input(int width)
-{
-	int i, c;
-	int datalength = sizeof(char) * width;
-	char* data = (char*)malloc(datalength);
-	srand(time(NULL));
-	for (i = 0; i < width; i++)
-	{
-		c = rand() % 2;
-		if (c == 0) data[i] = '0';
-		if (c == 1) data[i] = '1';
-	}
-	return data;
 }

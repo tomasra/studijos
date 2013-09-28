@@ -1,61 +1,49 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "cells.h"
 #include "png_utils.h"
 
-// nuskaito pradine eilute
-char* read_input(char* filename)
-{
-	FILE* file;
-	file = fopen(filename, "r");
-	if (file == NULL)
-		return -1;
-	else
-	{
-		// eilutes ilgis
-		int length;
-		fseek(file, 0L, SEEK_END);
-		length = ftell(file);
-		fseek(file, 0, SEEK_SET);
-
-		// skaitymas
-		char* data;
-		int datalength = (length + 1) * sizeof(char);
-		data = (char*)malloc(datalength);
-		memset(data, 0, datalength);
-
-		int i = 0;
-		char ch = fgetc(file);
-		while (ch != EOF)
-		{
-			data[i] = ch;
-			i++;
-			ch = fgetc(file);
-		}
-		fclose(file);
-		return data;
-	}
-}
+#define LINE_LENGTH 100
+#define ITERATIONS 100
 
 int main(int argc, char *argv[])
 {
-	// TODO - taisykle pasiimti is parametru?
-	unsigned char rule = 110;
 	char *input;
-	//input = read_input("tests/input2.txt");
-	input = get_random_input(100);
+	unsigned char rule;
+
+	if (argc == 2 || argc == 3)
+	{
+		int r = -1;
+		sscanf(argv[1], "%d", &r);
+		if (r >= 0 && r <= 255)
+			rule = r;
+		else
+		{
+			printf("taisyklė turi būti sveikas skaičius nuo 0 iki 255\n");
+			return -1;
+		}
+
+		// naudojama atsitiktine eilute
+		if (argc == 2)
+			input = get_random_input(LINE_LENGTH);
+		// pradine eilute skaitoma is nurodyto failo
+		else
+			input = get_input_from_file(argv[2]);
+	}
+	else
+	{
+		printf("Naudojimas: ./uzd1 taisyklė [failas]\n");
+		return -1;
+	}
 
 	if (input == -1)
 	{
 		printf("Nepavyko nuskaityti duomenu\n");
 		return -1;
 	}
-	if (input_valid(input) != 0)
-	{
-		printf("Nekorektiski duomenys\n");
-		return -1;
-	}
+//	if (input_valid(input) != 0)
+//	{
+//		printf("Nekorektiski duomenys\n");
+//		return -1;
+//	}
 
 	// pradedam
 	int i;
@@ -63,7 +51,7 @@ int main(int argc, char *argv[])
 
 	// paveikslelio matmenys - gaminam kvadratini
 	int width = strlen(input);
-	int height = strlen(input);
+	int height = ITERATIONS;
 
 	s_png_file* png = create_png_file("output.png", width, height);
 	if (png == -1)
@@ -83,6 +71,7 @@ int main(int argc, char *argv[])
 		input = output;
 	}
 	free(input);
+
 	finalize_png_file(png);
-	printf("Baigta\n");
+	printf("Rezultatas įrašytas į output.png\n");
 }
