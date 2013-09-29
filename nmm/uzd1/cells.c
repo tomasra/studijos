@@ -11,13 +11,12 @@
 #include <time.h>
 
 // sugeneruoja atsitiktine nurodyto ilgio eilute
-char* get_random_input(int width)
+char* get_random_input(int length)
 {
 	int i, c;
-	int datalength = sizeof(char) * width;
-	char* data = (char*)malloc(datalength);
+	char* data = (char*)calloc(length + 1, sizeof(char));
 	srand(time(NULL));
-	for (i = 0; i < width; i++)
+	for (i = 0; i < length; i++)
 	{
 		c = rand() % 2;
 		if (c == 0) data[i] = '0';
@@ -104,6 +103,7 @@ char process_cell(char cells[3], unsigned char rule)
 
 // input'as turi buti taisyklinga, bent jau triju simboliu ilgio null-terminated eilute
 // output'as turi buti jau isskirta atminties dalis, tokio paties ilgio kaip input'as
+// start/end numeravimas prasideda nuo nulio!
 void process_range(char *input, char *output, int start, int end, unsigned char rule)
 {
 	int i;
@@ -143,4 +143,39 @@ void process_range(char *input, char *output, int start, int end, unsigned char 
 void process_all(char* input, char* output, unsigned char rule)
 {
 	process_range(input, output, 0, (strlen(input) - 1), rule);
+}
+
+void process(char* input, char left, char right, int count, char* output, unsigned char rule)
+{
+	int i;
+	for (i = 0; i < count; i++)
+	{
+		// buferio pradzia - naudojama perduota kairioji lastele
+		if (i == 0)
+		{
+			// tenka suformuoti atskira masyva
+			char cells[3];
+			cells[0] = left;
+			cells[1] = input[i];
+			cells[2] = input[i + 1];
+			output[i] = process_cell(cells, rule);
+		}
+		// buferio pabaiga - naudojama perduota desinioji lastele
+		else if (i == count - 1)
+		{
+			// irgi formuojamas atskiras masyvas
+			char cells[3];
+			cells[0] = input[i - 1];
+			cells[1] = input[i];
+			cells[2] = right;
+			output[i] = process_cell(cells, rule);
+		}
+		// kitu atveju viskas ok
+		else
+		{
+			// atitinkama buferio dalis
+			char* cells = input + (i * sizeof(char)) - (1 * sizeof(char));
+			output[i] = process_cell(cells, rule);
+		}
+	}
 }
