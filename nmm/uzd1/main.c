@@ -101,7 +101,7 @@ s_args* init(int argc, char* argv[])
 	}
 	else
 	{
-		printf("Naudojimas: uzd1 taisyklė eilutės_ilgis iteracijų_skaičius [rezultatų png failas] [pradinės eilutės failas]");
+		printf("Naudojimas: uzd1 taisyklė eilutės_ilgis iteracijų_skaičius [rezultatų png failas] [pradinės eilutės failas]\n");
 		return -1;
 	}
 }
