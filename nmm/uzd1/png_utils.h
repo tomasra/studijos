@@ -21,8 +21,9 @@ typedef struct
 	png_infop png_info;
 } s_png_file;
 
-extern s_png_file* create_png_file(char* path, int width, int height);
-extern void write_line(char* input, s_png_file* output);
-extern void finalize_png_file(s_png_file* file);
+s_png_file* create_png_file(char* path, int width, int height);
+void write_file(char** lines, int count, s_png_file* output);
+void finalize_png_file(s_png_file* file);
+//extern void write_line(char* input, s_png_file* output);
 
 #endif /* PNG_UTILS_H_ */

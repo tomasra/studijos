@@ -1,22 +1,19 @@
-#include "cells.h"
-#include "png_utils.h"
 #include <mpi.h>
 #include <time.h>
+#include "cells.h"
+#include "png_utils.h"
 
 #define DEBUG 0
-
-#define LINE_LENGTH 5000
-#define ITERATIONS 5000
-
-// komunikacijai tarp procesu
-#define P_CALC_START 0
-#define P_CALC_END 1
 
 // algoritmo vykdymui reikalingi pradiniai duomenys
 typedef struct
 {
 	char* input;
+	int length;
+	int iterations;
 	unsigned char rule;
+	unsigned char export_to_png;	// 0/1
+	char* output_file;
 	s_png_file* png;
 } s_args;
 
@@ -27,84 +24,103 @@ typedef struct
 	int length;
 } cell_args;
 
-/*
-// nuoseklus vykdymas
-void run_normal(char* input, s_png_file* png, unsigned char rule, int iterations)
-{
-
-}
-
-// lygiagretus vykdymas
-void run_parallel(char* input, s_png_file* png, unsigned char rule, int iterations,
-		int argc, char* argv[], unsigned int cpu_count)
-{
-	int rank;
-	int size;
-
-	MPI_Init(&argc, &argv);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	MPI_Comm_size(MPI_COMM_WORLD, &size);
-	printf("CPU %d of %d", rank, size);
-	MPI_Finalize();
-}
-*/
-
 // paruosiamieji veiksmai, bendri tiek nuosekliam, tiek lygiagreciam programos variantui
+// pradiniu duomenu surinkimas, validacija ir t.t.
 s_args* init(int argc, char* argv[])
 {
 	s_args* result = (s_args*)malloc(sizeof(s_args));
-
-	char *input;
-	unsigned char rule;
-
-	if (argc == 2 || argc == 3)
+	if (argc >= 4 && argc <= 6)
 	{
-		int r = -1;
-		sscanf(argv[1], "%d", &r);
-		if (r >= 0 && r <= 255)
-			rule = r;
-		else
+		int status;
+		s_args* result = (s_args*)malloc(sizeof(s_args));
+
+		// taisykle
+		status = sscanf(argv[1], "%d", &(result->rule));
+		if (status != 1 || result->rule < 0 || result->rule > 255)
 		{
-			printf("taisyklė turi būti sveikas skaičius nuo 0 iki 255\n");
+			printf("Taisyklė turi būti sveikas skaičius nuo 0 iki 255\n");
 			return -1;
 		}
 
-		// naudojama atsitiktine eilute
-		if (argc == 2)
-			input = get_random_input(LINE_LENGTH);
-		// pradine eilute skaitoma is nurodyto failo
+		// eilutes_ilgis
+		status = sscanf(argv[2], "%d", &(result->length));
+		if (status != 1)
+		{
+			printf("Eilutės ilgis turi būti sveikas skaičius\n");
+			return -1;
+		}
+
+		// iteraciju skaicius
+		status = sscanf(argv[3], "%d", &(result->iterations));
+		if (status != 1)
+		{
+			printf("Iteracijų kiekis turi būti sveikas skaičius\n");
+			return -1;
+		}
+
+		// generuojama atsitiktine pradine eilute
+		if (argc == 4 || argc == 5)
+		{
+			result->input = get_random_input(result->length);
+
+			// rezultatai nebuna issaugomi png faile
+			if (argc == 4)
+			{
+				result->export_to_png = 0;
+				result->png = NULL;
+			}
+			// rezultatai issaugomi png faile
+			else
+			{
+				result->export_to_png = 1;
+				result->output_file = (char*)malloc(strlen(argv[4]) + 1);
+				strcpy(result->output_file, argv[4]);
+				result->png = create_png_file(argv[4], result->length, result->iterations);
+				if (result->png == -1)
+				{
+					printf("Nepavyko sukurti nurodyto PNG failo rezultatams\n");
+					return -1;
+				}
+			}
+
+		}
+		// pradine eilute imama is failo, rezultatai issaugomi png faile
 		else
-			input = get_input_from_file(argv[2]);
+		{
+			char* file_input = get_input_from_file(argv[5]);
+			if (file_input != -1)
+				result->input = file_input;
+			else
+			{
+				printf("Nepavyko nuskaityti failo su pradine eilute\n");
+				return -1;
+			}
+		}
+
+		return result;
 	}
 	else
 	{
-		printf("Naudojimas: ./uzd1 taisyklė [failas]\n");
+		printf("Naudojimas: uzd1 taisyklė eilutės_ilgis iteracijų_skaičius [rezultatų png failas] [pradinės eilutės failas]");
 		return -1;
 	}
+}
 
-	if (input == -1)
+void finalize(s_args* init_args, char** results)
+{
+	// eksportavimas i png
+	if (init_args->export_to_png == 1)
 	{
-		printf("Nepavyko nuskaityti duomenu\n");
-		return -1;
-	}
-//	if (input_valid(input) != 0)
-//	{
-//		printf("Nekorektiski duomenys\n");
-//		return -1;
-//	}
-
-	// paveikslelio matmenys - gaminam kvadratini
-	s_png_file* png = create_png_file("output.png", strlen(input), ITERATIONS);
-	if (png == -1)
-	{
-		printf("Nepavyko sukurti PNG failo\n");
-		return -1;
+		printf("Rezultatai rašomi į %s\n", init_args->output_file);
+		write_file(results, init_args->iterations, init_args->png);
+		finalize_png_file(init_args->png);
 	}
 
-	result->input = input;
-	result->rule = rule;
-	result->png = png;
-	return result;
+	// atminties atlaisvinimas
+	int i;
+	for (i = 0; i < init_args->iterations; i++)
+		free(results[i]);
+	free(results);
 }
 
 int main_serial(int argc, char* argv[])
@@ -113,30 +129,33 @@ int main_serial(int argc, char* argv[])
 	if (args == -1)
 		return -1;
 
-	// pasikopijavimas pradines eilutes
-	int input_length = sizeof(char) * strlen(args->input);
-	char* input = (char*)malloc(input_length);
-	memcpy(input, args->input, input_length);
+	int i;
 
-	// vykdymas
+	// buferio paruosimas
+//	int input_length = sizeof(char) * strlen(args->input);
+	int input_length = sizeof(char) * args->length;
+	char** buffer = (char**)calloc(sizeof(char*), args->iterations);
+	for (i = 0; i < args->iterations; i++)
+		buffer[i] = (char*)calloc(sizeof(char), input_length + 1);
+
+	// pradine eilute
+	memcpy(buffer[0], args->input, input_length);
+
+	// vykdymo pradzia
+	printf("Skaičiavimų pradžia\n");
 	clock_t start = clock();
 
-	int i;
-	for (i = 0; i < ITERATIONS; i++)
-	{
-		write_line(input, args->png);
-		char* output = malloc(strlen(input) * sizeof(char));
-		process_all(input, output, args->rule);
-		free(input);
-		input = output;
-	}
-	free(input);
-	finalize_png_file(args->png);
+	for (i = 1; i < args->iterations; i++)
+		process_all(buffer[i - 1], buffer[i], args->rule);
 
+	// vykdymo pabaiga
 	clock_t end = clock();
 	double total_time = (double)(end - start) / CLOCKS_PER_SEC;
+	printf("Skaičiavimai baigti per%5.2f sek.\n", total_time);
 
-	printf("Baigta per%5.2f sek.\n", total_time);
+	// cleanup
+	finalize(args, buffer);
+	printf("Baigta\n");
 }
 
 int main_parallel(int argc, char* argv[])
@@ -157,20 +176,27 @@ int main_parallel(int argc, char* argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+	// vykdymo parametrai
+	s_args* args = init(argc, argv);
+	if (args == -1)
+		return -1;
+
 	// pagrindinio proceso darbas
 	if (rank == root)
 	{
 		int i, w;
-		s_args* args = init(argc, argv);
-		if (args == -1)
-			return -1;
 
-		// pasikopijavimas pradines eilutes
-		int input_length = sizeof(char) * strlen(args->input);
-		char* input = (char*)calloc(input_length + 1, sizeof(char));
-		memcpy(input, args->input, input_length);
+		// buferio paruosimas
+//		int input_length = sizeof(char) * strlen(args->input);
+		int input_length = sizeof(char) * args->length;
+		char** buffer = (char**)calloc(sizeof(char*), args->iterations);
+		for (i = 0; i < args->iterations; i++)
+			buffer[i] = (char*)calloc(sizeof(char), input_length + 1);
 
-		// vykdymas
+		// pradine eilute
+		memcpy(buffer[0], args->input, input_length);
+
+		// vykdymo pradzia
 		clock_t start = clock();
 
 		// argumentu paruosimas kitiems procesams
@@ -193,7 +219,8 @@ int main_parallel(int argc, char* argv[])
 			else
 				worker_args[i]->length = chunk_length;
 
-//			printf("Worker %d: %d %d\n", worker_id, worker_args[i]->start, worker_args[i]->length);
+			if (DEBUG)
+				printf("Worker params%d: %d %d\n", worker_id, worker_args[i]->start, worker_args[i]->length);
 
 			// pradzioje kiekvienam procesui pasiunciama taisykle
 			// bei jo apdorojamu lasteliu skaicius
@@ -201,11 +228,8 @@ int main_parallel(int argc, char* argv[])
 			MPI_Send(&(worker_args[i]->length), 1, MPI_INT, worker_id, tag, MPI_COMM_WORLD);
 		}
 
-		for (i = 0; i < ITERATIONS; i++)
+		for (i = 1; i < args->iterations; i++)
 		{
-			write_line(input, args->png);
-			char* output = (char*)calloc(input_length + 1, sizeof(char));
-
 			// duomenu paskirstymas procesams
 			for (w = 0; w < worker_count; w++)
 			{
@@ -216,18 +240,18 @@ int main_parallel(int argc, char* argv[])
 
 				// kairioji
 				if (worker_args[w]->start == 0)
-					left = input[input_length - 1];
+					left = buffer[i - 1][input_length - 1];
 				else
-					left = input[worker_args[w]->start - 1];
+					left = buffer[i - 1][worker_args[w]->start - 1];
 
 				// desinioji
 				if (worker_args[w]->start + worker_args[w]->length == input_length)
-					right = input[0];
+					right = buffer[i - 1][0];
 				else
-					right = input[worker_args[w]->start + worker_args[w]->length];
+					right = buffer[i - 1][worker_args[w]->start + worker_args[w]->length];
 
 				// duodam procesui veiklos!
-				MPI_Send(input + worker_args[w]->start, worker_args[w]->length,	MPI_CHAR, worker_id, tag, MPI_COMM_WORLD);
+				MPI_Send(buffer[i - 1] + worker_args[w]->start, worker_args[w]->length, MPI_CHAR, worker_id, tag, MPI_COMM_WORLD);
 				MPI_Send(&left, 1, MPI_CHAR, worker_id, tag, MPI_COMM_WORLD);
 				MPI_Send(&right, 1, MPI_CHAR, worker_id, tag, MPI_COMM_WORLD);
 			}
@@ -236,19 +260,18 @@ int main_parallel(int argc, char* argv[])
 			for (w = 0; w < worker_count; w++)
 			{
 				int worker_id = w + 1;
-				MPI_Recv(output + worker_args[w]->start, worker_args[w]->length, MPI_CHAR, worker_id, tag, MPI_COMM_WORLD, &status);
+				MPI_Recv(buffer[i] + worker_args[w]->start, worker_args[w]->length, MPI_CHAR, worker_id, tag, MPI_COMM_WORLD, &status);
 			}
-
-			free(input);
-			input = output;
 		}
-		free(input);
-		finalize_png_file(args->png);
 
+		// fiksuojam vykdymo pabaiga
 		clock_t end = clock();
 		double total_time = (double)(end - start) / CLOCKS_PER_SEC;
+		printf("Skaičiavimai baigti per%5.2f sek.\n", total_time);
 
-		printf("Baigta per%5.2f sek.\n", total_time);
+		// cleanup
+		finalize(args, buffer);
+		printf("Baigta\n");
 	}
 	// salutiniu procesu darbai
 	else
@@ -268,7 +291,7 @@ int main_parallel(int argc, char* argv[])
 
 		// darbas
 		int i;
-		for (i = 0; i < ITERATIONS; i++)
+		for (i = 1; i < args->iterations; i++)
 		{
 			// duomenu gavimas
 			char left, right;

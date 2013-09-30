@@ -51,8 +51,8 @@ void write_line(char* input, s_png_file* output)
 	int i;
 	int pixel_size = 3;
 	int width = output->png_ptr->width;
-//	png_bytep row = png_malloc(output->png_ptr, width * sizeof(uint8_t) * pixel_size);
-	png_bytep row = (png_bytep)malloc(3 * width * sizeof(png_byte));
+	png_bytep row = png_malloc(output->png_ptr, width * sizeof(uint8_t) * pixel_size);
+//	png_bytep row = (png_bytep)malloc(3 * width * sizeof(png_byte));
 	for (i = 0; i < width; i++)
 	{
 		if (input[i] == '1')
@@ -70,6 +70,15 @@ void write_line(char* input, s_png_file* output)
 	}
 
 	png_write_row(output->png_ptr, row);
+}
+
+// suraso visas eilutes i faila
+// count - eiluciu skaicius
+void write_file(char** lines, int count, s_png_file* output)
+{
+	int i;
+	for (i = 0; i < count; i++)
+		write_line(lines[i], output);
 }
 
 // uzdaro faila

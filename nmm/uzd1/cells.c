@@ -145,6 +145,7 @@ void process_all(char* input, char* output, unsigned char rule)
 	process_range(input, output, 0, (strlen(input) - 1), rule);
 }
 
+// apdoroja nurodyto ilgio eilute, atsizvelgiant i kairiasias ir desiniasias lasteles
 void process(char* input, char left, char right, int count, char* output, unsigned char rule)
 {
 	int i;
