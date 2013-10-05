@@ -1,0 +1,8 @@
+Tomas Raila
+
+ 20 užduotis 
+Šifravimui naudotas srautinis 8 registrų šifras. Teksto pradžia: mar
+
+Iššifruokite  šifrą
+
+[201, 234, 59, 113, 243, 94, 4, 42, 41, 199, 240, 28, 78, 187, 54]
