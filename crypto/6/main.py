@@ -76,27 +76,34 @@ def autocor_test(seq, d):
 # print(stats.chi2.cdf(simple_bit_test(seq1), 1))
 
 print("Pavieniu bitu testas")
-print(1 - stats.chi2.cdf(simple_bit_test(seq1), 1))
-print(1 - stats.chi2.cdf(simple_bit_test(seq2), 1))
+s11 = stats.chi2.cdf(simple_bit_test(seq1), 1)
+s12 = stats.chi2.cdf(simple_bit_test(seq2), 1)
+print "T =", s11, ", p =", (1 - s11)
+print "T =", s12, ", p =", (1 - s12)
 
 print("\nBitu poru testas")
-print(1 - stats.chi2.cdf(bit_pair_test(seq1), 2))
-print(1 - stats.chi2.cdf(bit_pair_test(seq2), 2))
+s21 = stats.chi2.cdf(bit_pair_test(seq1), 2)
+s22 = stats.chi2.cdf(bit_pair_test(seq2), 2)
+print "T =", s21, ", p =", (1 - s21)
+print "T =", s22, ", p =", (1 - s22)
 
 print("\nPokerio testas")
-m = 5
-print(1 - stats.chi2.cdf(poker_test(seq1, m), 2**m - 1))
-print(1 - stats.chi2.cdf(poker_test(seq2, m), 2**m - 1))
+print "m = 3"
+m = 3
+s31 = stats.chi2.cdf(poker_test(seq1, m), 2**m - 1)
+s32 = stats.chi2.cdf(poker_test(seq2, m), 2**m - 1)
+print "T =", s31, ", p =", (1 - s31)
+print "T =", s32, ", p =", (1 - s32)
 
 # print(autocor_test('1011101110', 3))
 print("\nAutokoreliacijos testas")
+print "d = 20"
 d = 20
 t1, t2 = autocor_test(seq1, d), autocor_test(seq2, d)
 c1, c2 = stats.norm.cdf(t1), stats.norm.cdf(t2)
 p1 = c1 if t1 < 0 else 1.0 - c1
 p2 = c2 if t2 < 0 else 1.0 - c2
-
-print(p1)
-print(p2)
+print "T =", t1, ", p =", p1
+print "T =", t2, ", p =", p2
 
 # (-4.965212315030781, -7.390083445627209)
