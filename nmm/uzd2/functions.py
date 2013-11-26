@@ -5,30 +5,25 @@ class Functions:
     # funkcija f(x,t)
     @staticmethod
     def f(x, t):
-        # f1 = -3 * x * (x - 1) * cmath.sin(3 * t)
-        # f2 = complex(-2, 1) * cmath.cos(3 * t)
-        # f3 = -3 * Constants.beta * pow(x, 2) * pow(x - 1, 2) * (2 * x - 1) * pow(cmath.cos(3 * t), 3)
-        # return f1 + f2 + f3
-        f1 = x * (x-1) * -2 * t * cmath.sin(pow(t,2))                                # du/dt
-        f2 = 2 * cmath.cos(pow(t,2))                                                 # d^2u/dx^2
-        f3 = 3 * pow((x-1),2) * pow(x,2) * (2*x-1) * pow(cmath.cos(pow(t,2)), 2)     # d(|u|^2*u)/dx
-        return f1 - complex(0,1) * f2 - Constants.beta * f3
+        f1 = (x-1) * x * (cmath.cos(pow(t,2)) - 2 * t * (t + 1j) * cmath.sin(pow(t,2)))
+        f2 = 2 * (t + 1j) * cmath.cos(pow(t,2))
+        f3 = 3 * (t + 1j) * (pow(t,2) + 1) * pow(x-1, 2) * pow(x, 2) * (2*x-1) * pow(cmath.cos(pow(t,2)), 3)
+        return f1 - (1j * f2) - (Constants.beta * f3)
 
     # tikslaus sprendinio funkcija
     @staticmethod
     def u_exact(x, t):
-        # return x * (x - 1) * cmath.cos(3 * t)
-        return x * (x-1) * cmath.cos(pow(t, 2))
+        return x * (x-1) * (1j + t) * cmath.cos(pow(t, 2))
 
     # funkcijos f(x,t) reiksmiu masyvas duotu laiko momentu
     @staticmethod
     def f_range(t):
-        return [Functions.f(x, t) for x in Constants.x_range]
+        return [Functions.f(x, t) for x in Constants.x_range()]
 
     # tikslaus sprendinio masyvas duotu laiko momentu
     @staticmethod
     def u_exact_range(t):
-        return [Functions.u_exact(x, t) for x in Constants.x_range]
+        return [Functions.u_exact(x, t) for x in Constants.x_range()]
 
     # toliau seka tas gargaras F i kuri netiesiskai ieina u^, f() esamu bei sekanciu laiko momentu ir t.t.
     # zodziu viskas kas lieka desineje TLS lygybes puseje, kai is jos issireiskiami ieskomi u^
@@ -40,21 +35,25 @@ class Functions:
     # f - f(x,t) reiksmes dabartiniu laiko momentu (t)
     # f_next - f(x,t) reiksmes sekanciu laiko momentu (t + tau)
     @staticmethod
-    def f_prime(u, u_old, f, f_next):
-        res = []
-        for i in range(1, Constants.n):
-            u0, u1, u2 = u[i-1], u[i], u[i+1]                 # dabartiniai u taskai
-            v0, v1, v2 = u_old[i-1], u_old[i], u_old[i+1]     # sekantys u taskai (tikslinami iverciai)
-            u_tmp = (pow(abs(v2), 2) * v2) - (pow(abs(v0), 2) * v0) + (pow(abs(u2), 2) * u2) - (pow(abs(u0), 2) * u0)
-            
-            # p1 = complex(0, 1) * Constants.beta * Constants.h / complex(2, 0) * u_tmp
-            # p2 = complex(-1, 0) * (u2 - complex(2, 0) * u1 + u0)
-            # p3 = complex(0, 1) * pow(Constants.h, 2) * (f_next[i] + f[i])
-            # p4 = complex(0, 2) * pow(Constants.h, 2) * u1 / Constants.tau
+    def f_prime(u_now0, u_now1, u_now2, u_next0, u_next1, u_next2, f_now, f_next):
+        u_tmp = (pow(abs(u_next2), 2) * u_next2) - (pow(abs(u_next0), 2) * u_next0) + (pow(abs(u_now2), 2) * u_now2) - (pow(abs(u_now0), 2) * u_now0)
+        p1 = u_now2 - 2.0 * u_now1 + u_now0
+        p2 = -0.5 * Constants.beta * Constants.h() * complex(0,1) * u_tmp 
+        p3 = -1.0 * complex(0,1) * pow(Constants.h(), 2) * (f_next + f_now)
+        p4 = -2.0 * pow(Constants.h(), 2) * complex(0,1) * u_now1 / Constants.tau
+        return p1 + p2 + p3 + p4
 
-            p1 = u2 - 2 * u1 + u0
-            p2 = -0.5 * Constants.beta * Constants.h * complex(0,1) * u_tmp 
-            p3 = -1 * complex(0,1) * pow(Constants.h, 2) * (f_next[i] + f[i])
-            p4 = 2 * pow(Constants.h, 2) * complex(0,1) * u1 / Constants.tau
-            res.append(p1 + p2 + p3 + p4)
+    @staticmethod
+    def f_prime_range(u_now, u_next, f_now, f_next):
+        res = []
+        for j in range(1, Constants.n):
+            u_now0, u_now1, u_now2 = u_now[j-1], u_now[j], u_now[j+1]
+            u_next0, u_next1, u_next2 = u_next[j-1], u_next[j], u_next[j+1]
+            f_now1, f_next1 = f_now[j], f_next[j]
+            res.append(Functions.f_prime(u_now0, u_now1, u_now2, u_next0, u_next1, u_next2, f_now1, f_next1))
         return res
+
+    # netiktis - maksimalus tiksliu ir isskaiciuotu u reiksmiu skirtumas laiko momentu t
+    @staticmethod
+    def u_error(u_calculated, t):
+        return max([abs(u_calculated[i] - u_exact) for i, u_exact in enumerate(Functions.u_exact_range(t))])
