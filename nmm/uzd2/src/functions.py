@@ -62,5 +62,5 @@ class Functions:
 
     # maksimali viso algoritmo rezultato netiktis
     @staticmethod
-    def u_error_total(u_calc_list, t_list):
-        return max([Functions.u_error(u_calc, t_list[i]) for i, u_calc in enumerate(u_calc_list)])
+    def u_error_total(func_points, time_points):
+        return max([Functions.u_error(u_calc, time_points[i]) for i, u_calc in enumerate(func_points)])

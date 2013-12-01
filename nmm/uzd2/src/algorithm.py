@@ -1,14 +1,8 @@
 from constants import Constants
 from functions import Functions
 from thomas import ThomasAlgorithm
-from helpers import Helpers
 
 class Algorithm:
-    # maksimalus skirtumas tarp buvusiu ir patikslintu u reiksmiu - a.k.a progresas
-    @staticmethod
-    def _progress(u_old, u_new):
-        return max([abs(u_new[i] - u_old[i]) for i in range(0, Constants.n)])
-
     # u reiksmiu radimas sekanciam laiko momentui
     # sprendziama TLS serija, tikslinant sprendinius iki tam tikro lygio (Constants.delta)
     # u - funkcijos reiksmes dabartiniu laiko momentu
@@ -33,13 +27,18 @@ class Algorithm:
     # initial_conditions - pradines u reiksmes nustatytu diskretizacijos zingsniu Constants.h()
     # t - pradinis laiko momentas, paprastai nulis
     @staticmethod
-    def run(u_initial, t = 0.0):
+    def run(u_initial, t=0.0):
         u = u_initial
-        results = [u_initial]
+        func_points = [u_initial]
         time_points = [t]
-        while (t < Constants.t_max):
+        while (t <= Constants.t_max):
             u = Algorithm._iteration_block(u, t)
             t += Constants.tau
-            results.append(u)
+            func_points.append(u)
             time_points.append(t)
-        return results, time_points
+        return func_points, time_points
+
+    # maksimalus skirtumas tarp buvusiu ir patikslintu u reiksmiu - a.k.a progresas
+    @staticmethod
+    def _progress(u_old, u_new):
+        return max([abs(u_new[i] - u_old[i]) for i in range(0, Constants.n)])
