@@ -1,25 +1,32 @@
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-import matplotlib
-from matplotlib import cm
-import matplotlib.pyplot as plt
+from matplotlib import animation
+from matplotlib import pyplot as plt
+from constants import Constants
+from helpers import Helpers
 
-from settings import Input
-
+# pasiremta:
+# http://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
 class Plot:
-    # funkcijos kompleksiniu reiksmiu atvaizdavimas
-    def plot(self, f):
-        fig = plt.figure()
-        ax = Axes3D(fig)
-        x = Input.x_range
-        z, y = Plot.complex_to_xy(f)
-        ax.plot(xs=x, ys=y, zs=z, zdir='z', label='ys=0, zdir=z')
-        # ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-        plt.show()
+    def __init__(self):
+        self.fig = plt.figure()
+        self.ax = plt.axes(xlim = (0,1), ylim = (-0.5, 2))
+        self.line = self.ax.plot([], [], linewidth=2)
+        self.time_label = self.ax.text(0.02, 0.90, '', transform=self.ax.transAxes)
 
-    # kompleksiniu skaiciu masyvo isskaidymas i du atskirus su realiosiomis ir menamosiomis dalimis
-    @staticmethod
-    def complex_to_xy(c_list):
-        x = [c.real for c in c_list]
-        y = [c.imag for c in c_list]
-        return x, y
+    # visi atvaizduojami taskai
+    def set_data(self, func_points, time_points):
+        self.func_points = func_points
+        self.time_points = time_points
+
+    # braizomas grafikas 
+    def _plot_one(self, i):
+        self.time_label.set_text('t = %.2f' % self.time_points[i])      # laiko momentas
+        x, y = Helpers.data_to_xy(self.func_points[i])                  # funkcijos reiksmes tuo laiko momentu
+        self.line[0].set_data(x, y)
+        return self.line
+
+    def animate(self, speed=1.0):
+        interval = 1.0 / (len(self.time_points) / (speed * Constants.t_max)) * 1000.0
+        anim = animation.FuncAnimation(self.fig, self._plot_one, init_func=None, frames=len(self.func_points), interval=interval, blit=False)
+        plt.grid(True)
+        plt.show()

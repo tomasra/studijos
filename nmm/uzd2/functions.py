@@ -30,10 +30,10 @@ class Functions:
     # jei is viso tasku turime n+1, sita funkcija grazins n-1 reiksmiu
     # likusios dvi - is krastiniu salygu
     
-    # u - funkcijos reiksmes dabartiniu laiko momentu (t)
-    # u_old - funkcijos reiksmiu tarpiniai iverciai sekanciam laiko momentui (t + tau)
-    # f - f(x,t) reiksmes dabartiniu laiko momentu (t)
-    # f_next - f(x,t) reiksmes sekanciu laiko momentu (t + tau)
+    # u_now0, u_now1, u_now2 - atitinkamai: u(j-1), u(j), u(j+1)
+    # tas pats ir su u_next
+    # f_now - f(x,t) reiksme dabartiniu laiko momentu
+    # f_next - f(x,t) reiksme sekanciu laiko momentu
     @staticmethod
     def f_prime(u_now0, u_now1, u_now2, u_next0, u_next1, u_next2, f_now, f_next):
         u_tmp = (pow(abs(u_next2), 2) * u_next2) - (pow(abs(u_next0), 2) * u_next0) + (pow(abs(u_now2), 2) * u_now2) - (pow(abs(u_now0), 2) * u_now0)
@@ -43,6 +43,8 @@ class Functions:
         p4 = -2.0 * pow(Constants.h(), 2) * complex(0,1) * u_now1 / Constants.tau
         return p1 + p2 + p3 + p4
 
+    # F reiksmes visam erdves intervalui
+    # svarbu: F reiksmiu yra N-2, jei N - erdves tasku skaicius
     @staticmethod
     def f_prime_range(u_now, u_next, f_now, f_next):
         res = []
@@ -55,5 +57,10 @@ class Functions:
 
     # netiktis - maksimalus tiksliu ir isskaiciuotu u reiksmiu skirtumas laiko momentu t
     @staticmethod
-    def u_error(u_calculated, t):
-        return max([abs(u_calculated[i] - u_exact) for i, u_exact in enumerate(Functions.u_exact_range(t))])
+    def u_error(u_calc, t):
+        return max([abs(u_calc[i] - u_exact) for i, u_exact in enumerate(Functions.u_exact_range(t))])
+
+    # maksimali viso algoritmo rezultato netiktis
+    @staticmethod
+    def u_error_total(u_calc_list, t_list):
+        return max([Functions.u_error(u_calc, t_list[i]) for i, u_calc in enumerate(u_calc_list)])

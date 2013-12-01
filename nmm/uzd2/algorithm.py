@@ -9,11 +9,6 @@ class Algorithm:
     def _progress(u_old, u_new):
         return max([abs(u_new[i] - u_old[i]) for i in range(0, Constants.n)])
 
-    # maksimalus apskaiciuotu ir tiksliu u reiksmiu skirtumas nurodytu laiko momentu
-    @staticmethod
-    def _u_deviation(u, t):
-        return max([abs(u[i] - u_exact) for i, u_exact in enumerate(Functions.u_exact_range(t))])
-
     # u reiksmiu radimas sekanciam laiko momentui
     # sprendziama TLS serija, tikslinant sprendinius iki tam tikro lygio (Constants.delta)
     # u - funkcijos reiksmes dabartiniu laiko momentu
@@ -35,17 +30,16 @@ class Algorithm:
         return u_next_new
 
     # viso algoritmo vykdymas
+    # initial_conditions - pradines u reiksmes nustatytu diskretizacijos zingsniu Constants.h()
+    # t - pradinis laiko momentas, paprastai nulis
     @staticmethod
-    def run():
-        t = 0.0                             # pradinis laiko momentas
-        u = Functions.u_exact_range(t)      # pradines u reiksmes (tikslios)
-        results = [u]                       # issisaugom visas u reiksmes ir paklaidas
-        errors = [0]                        # pradzioje nulis, nes pradines u reiksmes yra tikslios
+    def run(u_initial, t = 0.0):
+        u = u_initial
+        results = [u_initial]
+        time_points = [t]
         while (t < Constants.t_max):
             u = Algorithm._iteration_block(u, t)
-            results.append(u)                          # rezultatai
-            errors.append(Functions.u_error(u, t + Constants.tau))     # paklaidos
             t += Constants.tau
-
-        # baigta
-        return results, max(errors)
+            results.append(u)
+            time_points.append(t)
+        return results, time_points

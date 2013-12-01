@@ -200,17 +200,20 @@ class AlgorithmTests(unittest.TestCase):
         Helpers.pretty_print_complex(errors)
         self.assertTrue(True)
 
+    # pagrindinis viso algoritmo testas
+    # maksimali netiktis turi mazeti mazinant diskretizacijos zingsnius h ir tau
     # @unittest.skip("")
     def test_algorithm(self):
         Constants.n = 4
-        # Constants.tau = 0.1
+        Constants.tau = 0.2
         errors = []
         for i in range(0, 5):
-            results, error = Algorithm.run()
-            errors.append(error)
+            u_initial = Functions.u_exact_range(0.0)            # tikslios reiksmes pradiniu laiko momentu
+            func_points, time_points = Algorithm.run(u_initial)
+            max_error = Functions.u_error_total(func_points, time_points)
+            errors.append(max_error)
             Constants.n *= 2
-            # Constants.tau /= 2
+            Constants.tau /= 2
 
         Helpers.pretty_print_complex(errors)
         self.assertTrue(True)
-        

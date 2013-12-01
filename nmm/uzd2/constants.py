@@ -1,14 +1,19 @@
 class Constants:
     n = 10              # erdves rezoliucija - intervalu (ne tasku!) skaicius
-    # h = 1.0 / n         # zingsnis erdveje
     tau = 0.1           # zingsnis laike
-    t_max = 2.0         # galutinis laiko momentas
+    t_max = 5.0         # galutinis laiko momentas
     beta = 0            # kokia nors konstanta funkcijai F
-    delta = 0.000001      # netiesines lygciu sistemos sprendimo tikslumas
+    delta = 0.0001      # netiesines lygciu sistemos sprendimo tikslumas
 
+    # zingsnis erdveje
     @staticmethod
     def h():
         return 1.0 / Constants.n
+
+    # kiek is viso laiko momentu - animacijos kadru skaicius
+    @staticmethod
+    def t_count():
+        return int(Constants.t_max / Constants.tau)
 
     # x taskai pagal nurodyta rezoliucija
     @staticmethod

@@ -35,9 +35,3 @@ class ThomasAlgorithm:
 
         # baigta
         return y
-
-    # TODO
-    # bendras perkelties metodo atvejis
-    # a, b, c, d - atitinkami triistrizaines matricos koeficientai
-    def solve_generic(a, b, c, d):
-        return None

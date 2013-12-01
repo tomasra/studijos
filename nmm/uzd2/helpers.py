@@ -58,3 +58,12 @@ class Helpers:
             if s[i] > s[i-1]:
                 return False
         return True
+
+    # duomenu masyvo transformavimas i taskus atvaizdavimui
+    # x - erdves taskai
+    # y - funkcijos reiksmes modulis tame taske
+    @staticmethod
+    def data_to_xy(data):
+        x = [i * (1.0 / (len(data) - 1)) for i in range(0, len(data))]
+        y = [abs(a) for a in data]
+        return x, y
