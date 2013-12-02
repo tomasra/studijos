@@ -1,8 +1,8 @@
 class Constants:
     n = 10              # erdves rezoliucija - intervalu (ne tasku!) skaicius
     tau = 0.1           # zingsnis laike
-    t_max = 5.0         # galutinis laiko momentas
-    beta = 0            # kokia nors konstanta funkcijai F
+    t_max = 1.0         # galutinis laiko momentas
+    beta = 50            # kokia nors konstanta funkcijai F
     delta = 0.0001      # netiesines lygciu sistemos sprendimo tikslumas
 
     # zingsnis erdveje

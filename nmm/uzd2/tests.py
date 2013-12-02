@@ -1,9 +1,9 @@
 import unittest
-from thomas import ThomasAlgorithm
-from algorithm import Algorithm
-from functions import Functions
-from constants import Constants
-from helpers import Helpers
+from src.thomas import ThomasAlgorithm
+from src.algorithm import Algorithm
+from src.functions import Functions
+from src.constants import Constants
+from src.helpers import Helpers
 
 # perkelties metodo testai
 class ThomasTests(unittest.TestCase):
@@ -15,75 +15,32 @@ class ThomasTests(unittest.TestCase):
         # sufabrikuotos desines lygybes puses reiksmes (F)
         fake_f_prime = []
         for i in range(1, len(u) - 1):
-            f = u[i+1] - (Constants.u_const * u[i]) + u[i-1]
+            f = u[i+1] - (Constants.u_const() * u[i]) + u[i-1]
             # butinai reikia padauginti is -1, nes algoritmas tikisi F reiksmiu, bet desinese lygybiu pusese yra -F
             f *= -1
             fake_f_prime.append(f)
 
         # testas
-        actual = ThomasAlgorithm.solve(Constants.u_const, fake_f_prime, Constants.kappa, Constants.gamma)
+        actual = ThomasAlgorithm.solve(Constants.u_const(), fake_f_prime, Constants.kappa, Constants.gamma)
         equal = Helpers.almost_equal_complex(u, actual)
         self.assertTrue(equal)
 
 class FunctionTests(unittest.TestCase):
-    @unittest.skip("laikinai nevykdomas")
+    # @unittest.skip("laikinai nevykdomas")
     def test_f(self):
-        delta = 0.001   # leistina netiktis
-        t = 1.8         # bet koks laiko momentas
-
-        # x, t = 0.4, 1.3
-        # h, tau = 0.2, 0.2       # pradiniai zingsniai
-        tau = 0.2
-        n = 5
-        max_errors = []
-        for i in range(1, 5):
-            error = []
-            h = 1.0 / n
-            for j in range(1, n):
-                u_now0, u_now1, u_now2 = Functions.u_exact((j-1)*h, t), Functions.u_exact(j*h, t), Functions.u_exact((j+1)*h, t)
-                u_next0, u_next1, u_next2 = Functions.u_exact((j-1)*h, t+tau), Functions.u_exact(j*h, t+tau), Functions.u_exact((j+1)*h, t+tau)
-                f_now = Functions.f(j*h,t)
-                f_next = Functions.f(j*h, t+tau)
-
-                # kaire algoritmo lygybes puse
-                left = (u_next1 - u_now1) / tau
-
-                # desine algoritmo lygybes puse
-                right11 = (u_next2 - 2.0 * u_next1 + u_next0) / pow(h, 2)
-                right12 = (u_now2 - 2.0 * u_now1 + u_now0) / pow(h, 2)
-                right1 = complex(0,1) * 0.5 * (right11 + right12)
-                right21 = (pow(abs(u_next2), 2) * u_next2 - pow(abs(u_next0), 2) * u_next0) / (h * 2.0)
-                right22 = (pow(abs(u_now2), 2) * u_now2 - pow(abs(u_now0), 2) * u_now0) / (h * 2.0)
-                right2 = Constants.beta * 0.5 * (right21 + right22)
-                right3 = (f_next + f_now) / 2.0
-                right = right1 + right2 + right3
-                error.append(abs(left - right))
-                # print left, right, abs(left-right), j*h, t
-            # print error
-            max_errors.append(max(error))
-            # print "----------------------------------------------"
-            # mazinami zingsniai
-            n *= 2
-            tau /= 2.0
-
-        # Helpers.pretty_print_complex(max_errors)
-        # Helpers.pretty_print_complex(u_next)
-        # self.assertGreater(delta, max(error))
-        # print max_errors
-        self.assertTrue(False)
-
-    @unittest.skip("laikinai nevykdomas")
-    def test_f2(self):
         print "-------------------------------------"
         print "-- f(x,t) testas"
         print "-------------------------------------"        
-        x, t = 0.42, 1.8
+        x, t = 0.42, 0.8
 
-        Constants.n = 5             # pradinis intervalu skaicius
-        Constants.tau = 0.2         # pradinis laiko zingsnis
+        Constants.beta = 3
+        Constants.n = 10             # pradinis intervalu skaicius
+        Constants.tau = 0.1         # pradinis laiko zingsnis
         errors = []
 
-        for i in range(0, 15):
+        for i in range(0, 7):
+            print Constants.h(), Constants.tau
+            # print x, t
             # tikrinamos reiksmes is tiksliu funkciju
             u_now0 = Functions.u_exact(x - Constants.h(), t)
             u_now1 = Functions.u_exact(x, t)
@@ -107,13 +64,9 @@ class FunctionTests(unittest.TestCase):
             right3 = (f_next + f_now) / 2.0
             right = right1 + right2 + right3
             
-            # print "h, tau = ", Constants.h(), ",", Constants.tau
-            # print "left, right = ", left, ",", right
-            # print "right1, right2, right3 = ", right1, ",", right2, ",", right3
-            # print "-------------------------------------"
             errors.append(abs(left - right))
-            Constants.n *= 2
-            Constants.tau /= 2.0
+            Constants.n *= 10
+            Constants.tau /= 10.0
         Helpers.pretty_print_complex(errors)
         # self.assertTrue(Helpers.sequence_descending(errors))
         self.assertTrue(True)
@@ -202,10 +155,13 @@ class AlgorithmTests(unittest.TestCase):
 
     # pagrindinis viso algoritmo testas
     # maksimali netiktis turi mazeti mazinant diskretizacijos zingsnius h ir tau
-    # @unittest.skip("")
+    @unittest.skip("")
     def test_algorithm(self):
+        print "-------------------------------------"
+        print "-- Viso algoritmo testas"
+        print "-------------------------------------"        
         Constants.n = 4
-        Constants.tau = 0.2
+        Constants.tau = 0.1
         errors = []
         for i in range(0, 5):
             u_initial = Functions.u_exact_range(0.0)            # tikslios reiksmes pradiniu laiko momentu
@@ -213,7 +169,7 @@ class AlgorithmTests(unittest.TestCase):
             max_error = Functions.u_error_total(func_points, time_points)
             errors.append(max_error)
             Constants.n *= 2
-            Constants.tau /= 2
+            # Constants.tau /= 2
 
         Helpers.pretty_print_complex(errors)
         self.assertTrue(True)
