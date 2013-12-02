@@ -1,10 +1,10 @@
 #!/usr/bin/python
-
+import sys
 from src.algorithm import Algorithm
 from src.constants import Constants
 from src.functions import Functions
 
-runs = 6
+runs = int(sys.argv[1])
 
 # skaiciavimai
 Constants.n = 5
