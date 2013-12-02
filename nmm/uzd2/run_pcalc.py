@@ -1,10 +1,11 @@
+import sys
 from mpi4py import MPI
 from src.constants import Constants
 from src.functions import Functions
 from src.algorithm import Algorithm
 
 # kiek kartu bus mazinami zingsniai ir vykdomas algoritmas
-runs = 6
+runs = int(sys.argv[1])
 
 # skirtingu parametru rinkinys
 def create_params():
