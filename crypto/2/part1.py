@@ -37,7 +37,7 @@ def blocks_to_str(blocks):
 cipher1 = [[103, 96], [114, 101], [115, 37], [114, 97], [105, 110], [97, 118]]
 key1 = [69, 82, 65]
 message1 = decrypt(cipher1, key1)
-# print(blocks_to_str(message1))
+print(blocks_to_str(message1))
 
 # antras
 # message2 = [[65, 66]]

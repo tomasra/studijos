@@ -91,10 +91,6 @@ def decrypt_rabin(p, q, c):
     m_2 = ((m1 * u * q * -1) + (m2 * v * p)) % n
     m_3 = ((m1 * u * q) + (m2 * v * p * -1)) % n
     m_4 = ((m1 * u * q * -1) + (m2 * v * p * -1)) % n
-    print m_1
-    print m_2
-    print m_3
-    print m_4
     return num_to_letters(m_1), num_to_letters(m_2), num_to_letters(m_3), num_to_letters(m_4)
 
 print decrypt_rsa(rsa_cipher, d, n)
@@ -114,8 +110,3 @@ print m2
 print m3
 print m4
 
-# p = find_p(7, t, n)
-# q = n / p
-# print "n = " + str(n)
-# print "p = " + str(p)
-# print "q = " + str(q)

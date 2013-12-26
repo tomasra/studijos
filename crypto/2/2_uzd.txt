@@ -8,7 +8,7 @@ Naudojamas raktas=era (69, 82, 65)
 Iššifruokite šifrą
 
 [[103, 96], [114, 101], [115, 37], [114, 97], [105, 110], [97, 118]]
-ATSAKYMAS:
+ATSAKYMAS: geras vaikas
 
 2. Feistelio iteraacijos funkcija ta pati 
 

@@ -1,0 +1,12 @@
+Tomas Raila
+
+7 užduotis 
+Raskite paslaptį, padalytą pagal Shamiro schemą su slenksčiu t=3
+ p=3138428376749
+ x=[x1,x2,x3]=[2266191296753, 1316255262493, 1198072250506]
+  s=[s1,s2,s3]=[838794127471, 936064268135, 2851937681015]
+Raskite paslaptį, padalytą pagal Asmutho-Blumo schemą su slenksčiu t=3,
+ ir padalykite ją iš naujo 5 dalyviams pagal Shamiro schemą su slenksčiu 2
+ [p,p1,p2,p3]=[21726401, 43452811, 86905607, 173811257]
+ [s1,s2,s3]=[32588314, 32588284, 32588327]
+ 
